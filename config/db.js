@@ -1,12 +1,12 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 module.exports.connecttoMongoDB = async () => {
-  mongoose.set('strictQuery', false);
-  mongoose.connect(process.env.Url_Mongo).then(()=>{console.log("connect to db")}
-).catch(
-    (error)=>{console.log(error)}
-  )
-}
+  mongoose.set("strictQuery", false);
 
-//9antra
-//rJ79x51SBzNVXOkR
+  try {
+    await mongoose.connect(process.env.URL_MONGO);
+    console.log("✅ Connected to MongoDB Atlas");
+  } catch (error) {
+    console.error("❌ MongoDB connection error:", error.message);
+  }
+};
