@@ -18,7 +18,8 @@ class ChatService {
         message: messageContent,
       });
 
-      return await newMessage.populate([
+      // ✅ CORRECTION : Bien populer le nouveau message
+      return await Message.findById(newMessage._id).populate([
         { path: "sender", select: "username email image_User" },
         { path: "receiver", select: "username email image_User" },
       ]);
@@ -30,6 +31,8 @@ class ChatService {
   // ✅ Récupérer tous les messages entre deux utilisateurs
   static async getMessagesBetweenUsers(userId1, userId2) {
     try {
+      console.log(`🔍 Recherche messages entre ${userId1} et ${userId2}`);
+      
       const messages = await Message.find({
         $or: [
           { sender: userId1, receiver: userId2 },
@@ -38,10 +41,19 @@ class ChatService {
       })
         .populate("sender", "username email image_User")
         .populate("receiver", "username email image_User")
-        .sort({ createdAt: 1 }); // ordre chronologique
+        .sort({ createdAt: 1 });
+
+      console.log(`📦 Messages trouvés: ${messages.length}`);
+      console.log("Premier message:", messages[0] ? {
+        id: messages[0]._id,
+        sender: messages[0].sender,
+        receiver: messages[0].receiver,
+        message: messages[0].message
+      } : "Aucun");
 
       return messages;
     } catch (error) {
+      console.error("❌ Erreur dans getMessagesBetweenUsers:", error);
       throw new Error(`Erreur lors de la récupération des messages: ${error.message}`);
     }
   }
@@ -65,7 +77,33 @@ class ChatService {
     }
   }
 
-  // ✅ Compter les messages non lus d’un utilisateur
+  // ✅ AJOUT : Marquer plusieurs messages comme lus
+  static async markMessagesAsRead(receiverId, senderId) {
+    try {
+      const result = await Message.updateMany(
+        { receiver: receiverId, sender: senderId, isRead: false },
+        { isRead: true }
+      );
+      return result;
+    } catch (error) {
+      throw new Error(`Erreur lors du marquage des messages comme lus: ${error.message}`);
+    }
+  }
+
+  // ✅ AJOUT : Supprimer un message
+  static async deleteMessage(messageId) {
+    try {
+      const message = await Message.findByIdAndDelete(messageId);
+      if (!message) {
+        throw new Error("Message introuvable");
+      }
+      return message;
+    } catch (error) {
+      throw new Error(`Erreur lors de la suppression du message: ${error.message}`);
+    }
+  }
+
+  // ✅ Compter les messages non lus d'un utilisateur
   static async getUnreadMessagesCount(userId) {
     try {
       return await Message.countDocuments({
