@@ -18,6 +18,7 @@ const paymentRouter = require("./routes/PaymentRouter");
 const reviewRouter = require("./routes/ReviewRouter");
 const bookingRouter = require("./routes/BookingRouter");
 const authRouter = require("./routes/authRouter"); // ✅ Auth ajouté
+const chatRoutes = require("./routes/ChatRoutes");
 
 const app = express();
 
@@ -64,6 +65,7 @@ app.use("/payments", paymentRouter);
 app.use("/reviews", reviewRouter);
 app.use("/bookings", bookingRouter);
 app.use("/auth", authRouter); // ✅ API Auth (login)
+app.use("/chat", chatRoutes);
 
 // --- Catch 404 ---
 app.use((req, res, next) => {

@@ -3,13 +3,8 @@ const router = express.Router();
 const ChatController = require("../controllers/ChatController");
 
 router.post("/send", ChatController.sendMessage);
-router.get("/messages/:otherUserId", ChatController.getMessages);
-router.put("/read/:otherUserId", ChatController.markAsRead);
-router.delete("/message/:messageId", ChatController.deleteMessage);
-
-router.get("/conversations", ChatController.getConversations);
-router.get("/unread-count", ChatController.getUnreadCount);
-
-router.get("/search-users", ChatController.searchUsers);
+router.get("/messages/:userId1/:userId2", ChatController.getMessages);
+router.put("/read", ChatController.markAsRead);
+router.delete("/delete/:messageId", ChatController.deleteMessage);
 
 module.exports = router;
